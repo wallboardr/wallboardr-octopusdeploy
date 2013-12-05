@@ -1,0 +1,21 @@
+{
+  "name": "wallboardr-octopus",
+  "version": "0.0.1",
+  "description": "Provides Octopus Deploy support for Wallboardr.",
+  "main": "admin.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "mercurial",
+    "url": "https://bitbucket.org/colinbate/wallboardr-octopusdeploy"
+  },
+  "keywords": [
+    "wallboardr",
+    "octopus",
+    "deploy",
+    "plugin"
+  ],
+  "author": "Colin Bate <colin@colinbate.com>",
+  "license": "MIT"
+}

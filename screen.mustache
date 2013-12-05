@@ -1,0 +1,12 @@
+<div class="octopus-project">
+  {{#title}}<h1>{{title}}</h1>{{/title}}
+  <table>
+  {{#deploys}}
+    <tr>
+      <td>{{environment}}</td>
+      <td>{{version}}</td>
+      <td>{{date}}</td>
+    </tr>
+  {{/deploys}}
+  </table>
+</div>
