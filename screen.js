@@ -23,8 +23,7 @@ define(['jquery', 'boards/data-loader', 'require', './admin'], function ($, data
         });
       },
       octoScreen = function () {
-        var self = this,
-            viewData;
+        var self = this;
         return {
           getViewData: function () {
             return getDeployments(self.props.data).then(function (data) {

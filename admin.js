@@ -20,7 +20,7 @@ define([], function () {
           if (res && res.status === 200 && res.data) {
             $scope.allprojects = res.data;
           }
-        })
+        });
       }
     };
     $scope.chooseProject = function (form, id) {
