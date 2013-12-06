@@ -14,19 +14,31 @@ define([], function () {
     $scope.showProjects = function () {
       return $scope.allprojects && $scope.allprojects.length > 0;
     };
-    $scope.getOctoProjects = function (form) {
+    $scope.getOctoProjects = function (form, active) {
       if (form.$valid) {
-        makeRequest('/projects', form).then(function (res) {
+        makeRequest('/projects', active || form).then(function (res) {
           if (res && res.status === 200 && res.data) {
             $scope.allprojects = res.data;
           }
         });
       }
     };
-    $scope.chooseProject = function (form, id) {
+    $scope.projStatus = function (proj) {
+      var classes = [];
+      if ($scope.activeScreenEdit && $scope.activeScreenEdit.data && proj.Id === $scope.activeScreenEdit.data.projectId) {
+        classes.push('is-active');
+      }
+      return classes;
+    };
+    $scope.chooseProject = function (form, id, active) {
+      var dataLocation = active || form;
       if (form.$valid) {
-        form.data.projectId = id;
-        $scope.addScreen(form);
+        dataLocation.data.projectId = id;
+        if (active) {
+          $scope.updateActiveScreen(form);
+        } else {
+          $scope.addScreen(form);
+        }
       }
     };
     $scope.reset();

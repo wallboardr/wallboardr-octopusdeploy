@@ -1,7 +1,19 @@
-<div class="form-panel">
-  <textarea placeholder="Enter some text..." rows="4" ng-model="activeScreenEdit.message" required></textarea>
-  <div class="buttons">
-    <button ng-click="updateActiveScreen(editScreenForm)" class="success">Save</button>
-    <button ng-click="cancelEditScreen()" class="cancel">Cancel</button>
+<div ng-controller="OctopusController">
+  <div class="form-panel" ng-hide="showProjects()">
+    <input type="url" ng-model="activeScreenEdit.data.url" placeholder="Octopus Server URL" required>
+    <input type="text" ng-model="activeScreenEdit.data.apiKey" placeholder="Octopus API key" required>
+    <div class="buttons">
+      <button ng-click="getOctoProjects(editScreenForm, activeScreenEdit)" class="success">Fetch Projects</button>
+      <button ng-click="cancelEditScreen()" class="cancel">Cancel</button>
+    </div>
+  </div>
+  <div class="form-panel octopus-projects" ng-show="showProjects()">
+    <div class="choices">
+      <div class="list-item" ng-repeat="proj in allprojects" ng-class="projStatus(proj)" ng-click="chooseProject(editScreenForm, proj.Id, activeScreenEdit)">{{proj.Name}}</div>
+    </div>
+    <div class="buttons">
+      <button ng-click="reset()" class="success">&lt; Prev</button>
+      <button ng-click="cancelEditScreen()" class="cancel">Cancel</button>
+    </div>
   </div>
 </div>

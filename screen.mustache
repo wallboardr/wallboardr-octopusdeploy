@@ -2,11 +2,13 @@
   {{#title}}<h1>{{title}}</h1>{{/title}}
   <table>
   {{#deploys}}
+    {{#version.sprint}}
     <tr>
       <td>{{environment}}</td>
-      <td>{{version}}</td>
+      <td>{{version.sprint}}<span class="release">{{version.release}}</span></td>
       <td>{{date}}</td>
     </tr>
+    {{/version.sprint}}
   {{/deploys}}
   </table>
 </div>

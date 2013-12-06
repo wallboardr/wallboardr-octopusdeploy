@@ -8,13 +8,31 @@ define(['jquery', 'boards/data-loader', 'require', './admin'], function ($, data
           proxy: true
         });
       },
+      parseVersion = function (v) {
+        var vRegex = /\d+\.(\d+)\.(\d+)(\.\d+|\-[a-z0-9]+)/,
+            matches = vRegex.exec(v),
+            sprint = '',
+            extra = '';
+        if (matches) {
+          if (matches[3][0] === '-') {
+            // Test release
+            sprint = false;
+          } else {
+            sprint = 'S' + matches[2];
+            extra = matches[3];
+          }
+        } else {
+          sprint = '??';
+        }
+        return {sprint: sprint, release: extra};
+      },
       getDeployments = function (data) {
         var partial = '/projects/' + data.projectId + '/most-recent-deployment';
         return makeRequest(partial, data).then(function (deps) {
           var normalized = $.map(deps, function (dep) {
             return {
               environment: dep.Name.substr(10),
-              version: dep.ReleaseVersion.substr(5),
+              version: parseVersion(dep.ReleaseVersion),
               date: dep.Task.CompletedTime.substr(0, 10)
             };
           });
