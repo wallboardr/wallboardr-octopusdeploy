@@ -26,14 +26,34 @@ define(['jquery', 'boards/data-loader', 'require', './admin'], function ($, data
         }
         return {sprint: sprint, release: extra};
       },
+      parseDate = function (dep) {
+        var dStr, matches;
+        if (!dep.Task.CompletedTime || dep.Task.State === 'Executing' || dep.Task.State === 'Paused') {
+          return 'Now';
+        }
+        dStr = dep.Task.CompletedTime.substr(0, 10);
+        matches = /(\d{4}).(\d\d).(\d\d)/.exec(dStr);
+        if (matches) {
+          return matches[1] + '&#8209;' + matches[2] + '&#8209;' + matches[3];
+        } else {
+          return dStr;
+        }
+      },
+      parseEnvironment = function (name) {
+        var env = name.substr(10), matches = /^(.+)\s+\(#\d+\)/.exec(env);
+        if (matches) {
+          env = matches[1];
+        }
+        return env.replace(' ', '&nbsp;');
+      },
       getDeployments = function (data) {
         var partial = '/projects/' + data.projectId + '/most-recent-deployment';
         return makeRequest(partial, data).then(function (deps) {
           var normalized = $.map(deps, function (dep) {
             return {
-              environment: dep.Name.substr(10),
+              environment: parseEnvironment(dep.Name),
               version: parseVersion(dep.ReleaseVersion),
-              date: dep.Task.CompletedTime.substr(0, 10)
+              date: parseDate(dep)
             };
           });
 
