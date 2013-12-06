@@ -48,7 +48,8 @@ define([], function () {
     name: 'octopus',
     controller: 'OctopusController',
     humanName: 'Octopus Deploy',
-    centered: true
+    centered: true,
+    pollInterval: 120
   };
 
   return octopusController;
