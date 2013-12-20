@@ -37,7 +37,11 @@ define([], function () {
         } else {
           $scope.addScreen(form);
         }
+        $scope.reset();
       }
+    };
+    $scope.cancelEditScreen = function () {
+      $scope.reset();
     };
     $scope.reset();
   };
