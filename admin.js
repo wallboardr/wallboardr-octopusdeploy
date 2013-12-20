@@ -17,9 +17,7 @@ define([], function () {
     $scope.getOctoProjects = function (form, active) {
       if (form.$valid) {
         makeRequest('/projects', active || form).then(function (res) {
-          if (res && res.status === 200 && res.data) {
-            $scope.allprojects = res.data;
-          }
+          $scope.allprojects = res;
         });
       }
     };
