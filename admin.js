@@ -1,5 +1,27 @@
 define([], function () {
   'use strict';
+  var api = {
+    v1: {
+      projects: '/projects',
+      deployments: function (data) {
+        return '/projects/' + data.projectId + '/most-recent-deployment';
+      },
+      version: 'v1'
+    },
+    v2: {
+      projects: '/projects/all',
+      deployments: function () {
+        return '/dashboard';
+      },
+      version: 'v2'
+    },
+    getVersion: function (data) {
+      if (data.apiKey.indexOf('API-') === 0) {
+        return this.v2;
+      }
+      return this.v1;
+    }
+  };
   var octopusController = function ($scope, dataLoader) {
     var makeRequest = function (url, form) {
       url = form.data.url + '/api' + url + '?apikey=' + form.data.apiKey;
@@ -15,8 +37,9 @@ define([], function () {
       return $scope.allprojects && $scope.allprojects.length > 0;
     };
     $scope.getOctoProjects = function (form, active) {
+      var dataLocation = active || form;
       if (form.$valid) {
-        makeRequest('/projects', active || form).then(function (res) {
+        makeRequest(api.getVersion(dataLocation.data).projects, dataLocation).then(function (res) {
           $scope.allprojects = res;
         });
       }
@@ -51,7 +74,8 @@ define([], function () {
     controller: 'OctopusController',
     humanName: 'Octopus Deploy',
     centered: true,
-    pollInterval: 120
+    pollInterval: 120,
+    api: api
   };
 
   return octopusController;

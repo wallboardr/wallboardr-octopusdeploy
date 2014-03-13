@@ -1,6 +1,7 @@
 define(['jquery', 'boards/data-loader', 'require', './admin'], function ($, dataLoader, require) {
   'use strict';
   var plugin = require('./admin'),
+      api = plugin.config.api,
       makeRequest = function (url, data) {
         url = data.url + '/api' + url + '?apikey=' + data.apiKey;
         return dataLoader({
@@ -28,10 +29,13 @@ define(['jquery', 'boards/data-loader', 'require', './admin'], function ($, data
       },
       parseDate = function (dep) {
         var dStr, matches;
-        if (!dep.Task.CompletedTime || dep.Task.State === 'Executing' || dep.Task.State === 'Paused') {
+        if (dep.State === 'Failed') {
+          return 'Failed'
+        }
+        if (!dep.CompletedTime || dep.State === 'Executing' || dep.State === 'Paused') {
           return 'Now';
         }
-        dStr = dep.Task.CompletedTime.substr(0, 10);
+        dStr = dep.CompletedTime.substr(0, 10);
         matches = /(\d{4}).(\d\d).(\d\d)/.exec(dStr);
         if (matches) {
           return matches[1] + '&#8209;' + matches[2] + '&#8209;' + matches[3];
@@ -46,19 +50,57 @@ define(['jquery', 'boards/data-loader', 'require', './admin'], function ($, data
         }
         return env.replace(' ', '&nbsp;');
       },
-      getDeployments = function (data) {
-        var partial = '/projects/' + data.projectId + '/most-recent-deployment';
-        return makeRequest(partial, data).then(function (deps) {
-          var normalized = $.map(deps, function (dep) {
-            return {
-              environment: parseEnvironment(dep.Name),
-              version: parseVersion(dep.ReleaseVersion),
-              date: parseDate(dep)
-            };
-          });
+      mapToKeyedArray = function (keyName, arr) {
+        var ii, obj = {};
+        for (ii = 0; ii < arr.length; ii += 1) {
+          obj[arr[ii][keyName]] = arr[ii];
+        }
+        return obj;
+      },
+      reverseDeploys = function (a, b) {
+        if (a.sort < b.sort) {
+          return 1;
+        } else if (a.sort > b.sort) {
+          return -1;
+        }
+        return 0;
+      },
+      handleData = function (data, version) {
+        return ({
+          v1: function (deps) {
+            var normalized = $.map(deps, function (dep) {
+              return {
+                environment: parseEnvironment(dep.Name),
+                version: parseVersion(dep.ReleaseVersion),
+                date: parseDate(dep.Task)
+              };
+            });
 
-          return {deploys: normalized};
-        });
+            return {deploys: normalized};
+          },
+          v2: function (dash) {
+            var envLookup = mapToKeyedArray('Id', dash.Environments),
+                deploys = [],
+                ii;
+            for (ii = 0; ii < dash.Items.length; ii += 1) {
+              if (dash.Items[ii].ProjectId === data.projectId) {
+                deploys.push({
+                  environment: envLookup[dash.Items[ii].EnvironmentId].Name,
+                  version: parseVersion(dash.Items[ii].ReleaseVersion),
+                  date: parseDate(dash.Items[ii]),
+                  sort: dash.Items[ii].CompletedTime || envLookup[dash.Items[ii].EnvironmentId].Name
+                });
+              }
+            }
+            deploys.sort(reverseDeploys)
+            return { deploys: deploys };
+          }
+        })[version];
+      },
+      getDeployments = function (data) {
+        var apiVer = api.getVersion(data),
+            partial = apiVer.deployments(data);
+        return makeRequest(partial, data).then(handleData(data, apiVer.version));
       },
       octoScreen = function () {
         var self = this;
