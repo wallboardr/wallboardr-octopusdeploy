@@ -30,7 +30,7 @@ define(['jquery', 'boards/data-loader', 'require', './admin'], function ($, data
       parseDate = function (dep) {
         var dStr, matches;
         if (dep.State === 'Failed') {
-          return 'Failed'
+          return 'Failed';
         }
         if (!dep.CompletedTime || dep.State === 'Executing' || dep.State === 'Paused') {
           return 'Now';
@@ -92,7 +92,7 @@ define(['jquery', 'boards/data-loader', 'require', './admin'], function ($, data
                 });
               }
             }
-            deploys.sort(reverseDeploys)
+            deploys.sort(reverseDeploys);
             return { deploys: deploys };
           }
         })[version];
