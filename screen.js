@@ -52,6 +52,9 @@ define(['jquery', 'boards/data-loader', 'require', './admin'], function ($, data
       },
       mapToKeyedArray = function (keyName, arr) {
         var ii, obj = {};
+        if (!arr) {
+          return obj;
+        }
         for (ii = 0; ii < arr.length; ii += 1) {
           obj[arr[ii][keyName]] = arr[ii];
         }
@@ -82,6 +85,9 @@ define(['jquery', 'boards/data-loader', 'require', './admin'], function ($, data
             var envLookup = mapToKeyedArray('Id', dash.Environments),
                 deploys = [],
                 ii;
+            if (!dash.Environments || !dash.Items) {
+              return { deploys: deploys };
+            }
             for (ii = 0; ii < dash.Items.length; ii += 1) {
               if (dash.Items[ii].ProjectId === data.projectId) {
                 deploys.push({
