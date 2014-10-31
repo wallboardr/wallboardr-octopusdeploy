@@ -65,6 +65,7 @@ define([], function () {
     };
     $scope.cancelEditScreen = function () {
       $scope.reset();
+      $scope.$parent.cancelEditScreen();
     };
     $scope.reset();
   };
