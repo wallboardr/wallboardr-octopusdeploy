@@ -60,6 +60,15 @@ define(['jquery', 'boards/data-loader', 'require', './admin'], function ($, data
         }
         return obj;
       },
+      mapToHashset = function (arr) {
+        var ii, obj = {};
+        for (ii = 0; ii < arr.length; ii += 1) {
+          if (arr[ii]) {
+            obj[arr[ii]] = true;
+          }
+        }
+        return obj;
+      },
       reverseDeploys = function (a, b) {
         if (a.sort < b.sort) {
           return 1;
@@ -67,6 +76,9 @@ define(['jquery', 'boards/data-loader', 'require', './admin'], function ($, data
           return -1;
         }
         return 0;
+      },
+      notExcluded = function (data, item) {
+        return !data.excludeEnvsHash[item]
       },
       handleData = function (data, version) {
         return ({
@@ -85,11 +97,14 @@ define(['jquery', 'boards/data-loader', 'require', './admin'], function ($, data
             var envLookup = mapToKeyedArray('Id', dash.Environments),
                 deploys = [],
                 ii;
+            data.excludeEnvs = data.excludeEnvs || '';
+            data.excludeEnvsHash = mapToHashset(data.excludeEnvs.split(/\s*,\s*/));
             if (!dash.Environments || !dash.Items) {
               return { deploys: deploys };
             }
             for (ii = 0; ii < dash.Items.length; ii += 1) {
-              if (dash.Items[ii].ProjectId === data.projectId) {
+              if (dash.Items[ii].ProjectId === data.projectId &&
+                notExcluded(data, envLookup[dash.Items[ii].EnvironmentId].Name)) {
                 deploys.push({
                   environment: envLookup[dash.Items[ii].EnvironmentId].Name,
                   version: parseVersion(dash.Items[ii].ReleaseVersion),
