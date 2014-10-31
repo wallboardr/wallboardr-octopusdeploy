@@ -8,6 +8,9 @@
     </div>
   </div>
   <div class="form-panel octopus-projects" ng-show="showProjects()">
+    <div class="excludeEnvs">
+      <input type="text" ng-model="activeScreenEdit.data.excludeEnvs" placeholder="Exclude Environments (comma separated)" title="Exclude Environments (comma separated)">
+    </div>
     <div class="choices">
       <div class="list-item" ng-repeat="proj in allprojects" ng-class="projStatus(proj)" ng-click="chooseProject(editScreenForm, proj.Id, activeScreenEdit)">{{proj.Name}}</div>
     </div>
