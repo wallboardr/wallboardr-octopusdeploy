@@ -12,6 +12,7 @@ define(['jquery', 'boards/data-loader', 'require', './admin'], function ($, data
       parseVersion = function (v) {
         var vRegex = /\d+\.(\d+)\.(\d+)(\.\d+|\-[a-z0-9]+)/,
             matches = vRegex.exec(v),
+            ppRegex = /(\d+)(\.\d+\.\d+)/,
             sprint = '',
             extra = '';
         if (matches) {
@@ -23,7 +24,13 @@ define(['jquery', 'boards/data-loader', 'require', './admin'], function ($, data
             extra = matches[3];
           }
         } else {
-          sprint = '??';
+          matches = ppRegex.exec(v);
+          if (matches) {
+            sprint = 'S' + matches[1];
+            extra = matches[2];
+          } else {
+            sprint = '??';
+          }
         }
         return {sprint: sprint, release: extra};
       },
@@ -78,7 +85,7 @@ define(['jquery', 'boards/data-loader', 'require', './admin'], function ($, data
         return 0;
       },
       notExcluded = function (data, item) {
-        return !data.excludeEnvsHash[item]
+        return !data.excludeEnvsHash[item];
       },
       handleData = function (data, version) {
         return ({
